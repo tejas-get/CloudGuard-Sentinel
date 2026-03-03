@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudGuard Sentinel — Secure Access</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --void:#02040a;--deep:#060d1a;
+  --glass:rgba(8,20,40,0.65);
+  --cyan:#00e5ff;--cyan-glow:rgba(0,229,255,0.25);
+  --green:#00ffa3;--pink:#ff2d78;--gold:#ffd060;
+  --text:#ddeeff;--muted:#4a6a8a;
+  --border:rgba(0,229,255,0.15);
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--void);font-family:'Syne',sans-serif;color:var(--text);display:flex;align-items:center;justify-content:center;position:relative}
+#canvas{position:fixed;inset:0;z-index:0;opacity:0.6}
+.blob{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:1}
+.blob1{width:600px;height:600px;background:radial-gradient(circle,rgba(0,229,255,0.08),transparent 70%);top:-200px;left:-200px;animation:drift 18s ease-in-out infinite}
+.blob2{width:500px;height:500px;background:radial-gradient(circle,rgba(0,255,163,0.06),transparent 70%);bottom:-150px;right:-100px;animation:drift 22s ease-in-out infinite reverse}
+.blob3{width:300px;height:300px;background:radial-gradient(circle,rgba(255,45,120,0.05),transparent 70%);top:40%;left:60%;animation:drift 15s ease-in-out infinite 5s}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(40px,-30px) scale(1.05)}66%{transform:translate(-20px,40px) scale(0.95)}}
+.hex-grid{position:fixed;inset:0;z-index:1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='104'%3E%3Cpolygon points='30,2 58,17 58,47 30,62 2,47 2,17' fill='none' stroke='rgba(0,229,255,0.04)' stroke-width='0.8'/%3E%3Cpolygon points='30,54 58,69 58,99 30,114 2,99 2,69' fill='none' stroke='rgba(0,229,255,0.04)' stroke-width='0.8'/%3E%3C/svg%3E");background-size:60px 104px;animation:hexshift 40s linear infinite}
+@keyframes hexshift{to{background-position:60px 104px}}
+body::after{content:'';position:fixed;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px)}
+.wrap{position:relative;z-index:10;width:100%;max-width:440px;padding:24px;animation:emerge 0.8s cubic-bezier(0.16,1,0.3,1)}
+@keyframes emerge{from{opacity:0;transform:translateY(30px) scale(0.96)}to{opacity:1;transform:none}}
+.logo-area{text-align:center;margin-bottom:36px}
+.shield-wrap{width:80px;height:80px;margin:0 auto 18px;position:relative;filter:drop-shadow(0 0 20px var(--cyan-glow)) drop-shadow(0 0 40px rgba(0,229,255,0.1))}
+.shield-wrap svg{width:80px;height:80px}
+.logo-ring{position:absolute;inset:-12px;border:1px solid var(--border);border-radius:50%;animation:spin 12s linear infinite}
+.logo-ring::before{content:'';position:absolute;width:6px;height:6px;background:var(--cyan);border-radius:50%;top:-3px;left:50%;transform:translateX(-50%);box-shadow:0 0 10px var(--cyan)}
+.logo-ring2{position:absolute;inset:-20px;border:1px dashed rgba(0,229,255,0.08);border-radius:50%;animation:spin 20s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.wordmark{font-size:2rem;font-weight:800;letter-spacing:4px;line-height:1}
+.wordmark em{color:var(--cyan);font-style:normal}
+.tagline{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:5px;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px}
+.tagline::before,.tagline::after{content:'';flex:1;max-width:30px;height:1px;background:var(--border)}
+.glass-card{background:var(--glass);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--border);border-radius:20px;padding:40px;position:relative;overflow:hidden}
+.glass-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,var(--cyan) 30%,var(--green) 70%,transparent 100%);opacity:0.6}
+.glass-card::after{content:'';position:absolute;inset:0;border-radius:20px;background:linear-gradient(135deg,rgba(255,255,255,0.03) 0%,transparent 60%);pointer-events:none}
+.sweep{position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,229,255,0.04),transparent);animation:sweep 4s ease-in-out infinite;pointer-events:none}
+@keyframes sweep{0%{left:-100%}100%{left:200%}}
+.corner{position:absolute;width:20px;height:20px;pointer-events:none}
+.corner-tl{top:14px;left:14px;border-top:1px solid var(--cyan);border-left:1px solid var(--cyan)}
+.corner-tr{top:14px;right:14px;border-top:1px solid var(--cyan);border-right:1px solid var(--cyan)}
+.corner-bl{bottom:14px;left:14px;border-bottom:1px solid var(--cyan);border-left:1px solid var(--cyan)}
+.corner-br{bottom:14px;right:14px;border-bottom:1px solid var(--cyan);border-right:1px solid var(--cyan)}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--green);letter-spacing:3px;margin-bottom:28px;display:flex;align-items:center;gap:10px}
+.section-label::before{content:'';width:3px;height:14px;background:var(--green);border-radius:2px}
+.field{margin-bottom:22px;position:relative}
+.field label{display:block;font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;transition:color 0.2s}
+.field:focus-within label{color:var(--cyan)}
+.input-wrap{position:relative}
+.input-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:16px;height:16px;opacity:0.4;transition:opacity 0.2s;pointer-events:none}
+.field:focus-within .input-icon{opacity:1}
+.field input{width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(0,229,255,0.12);border-radius:10px;padding:14px 16px 14px 46px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.88rem;outline:none;transition:all 0.25s;letter-spacing:1px}
+.field input:focus{border-color:var(--cyan);background:rgba(0,229,255,0.04);box-shadow:0 0 0 3px rgba(0,229,255,0.08),0 0 20px rgba(0,229,255,0.05)}
+.field input::placeholder{color:rgba(74,106,138,0.6);letter-spacing:1px}
+.btn-auth{width:100%;margin-top:8px;padding:16px;background:linear-gradient(135deg,rgba(0,229,255,0.15),rgba(0,255,163,0.1));border:1px solid var(--cyan);border-radius:10px;color:#fff;font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:12px}
+.btn-auth::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,229,255,0.2),rgba(0,255,163,0.15));opacity:0;transition:opacity 0.3s}
+.btn-auth:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,229,255,0.2),0 0 60px rgba(0,229,255,0.08)}
+.btn-auth:hover::before{opacity:1}
+.btn-auth:active{transform:translateY(0)}
+.btn-arrow{width:20px;height:20px;border:1.5px solid currentColor;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;transition:transform 0.2s}
+.btn-auth:hover .btn-arrow{transform:translateX(3px)}
+.error-box{background:rgba(255,45,120,0.08);border:1px solid rgba(255,45,120,0.3);border-radius:10px;padding:14px 18px;margin-bottom:24px;font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--pink);display:flex;align-items:center;gap:10px;animation:shake 0.4s ease}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.demo-panel{margin-top:24px;border:1px solid rgba(255,208,96,0.15);border-radius:10px;overflow:hidden}
+.demo-header{background:rgba(255,208,96,0.05);padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--gold);letter-spacing:3px;border-bottom:1px solid rgba(255,208,96,0.1)}
+.demo-rows{padding:12px 16px;display:flex;flex-direction:column;gap:6px}
+.demo-row{display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:0.7rem}
+.demo-user{color:var(--text)}.demo-pass{color:var(--muted)}
+.demo-role{padding:2px 8px;border-radius:4px;font-size:0.58rem;letter-spacing:2px}
+.role-admin{background:rgba(255,45,120,0.15);color:var(--pink);border:1px solid rgba(255,45,120,0.3)}
+.role-user{background:rgba(0,255,163,0.1);color:var(--green);border:1px solid rgba(0,255,163,0.2)}
+.footer-status{text-align:center;margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--muted);letter-spacing:2px;display:flex;align-items:center;justify-content:center;gap:14px}
+.status-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);display:inline-block;animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.sep{opacity:0.3}
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+<div class="hex-grid"></div>
+
+<div class="wrap">
+  <div class="logo-area">
+    <div class="shield-wrap">
+      <div class="logo-ring"></div>
+      <div class="logo-ring2"></div>
+      <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="sg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#00ffa3"/>
+          </linearGradient>
+        </defs>
+        <path d="M40 6L10 20V40C10 57 23.5 72.5 40 77C56.5 72.5 70 57 70 40V20L40 6Z" fill="rgba(0,229,255,0.06)" stroke="url(#sg)" stroke-width="1.5"/>
+        <path d="M40 18L20 28V40C20 52.5 28.8 63.5 40 67C51.2 63.5 60 52.5 60 40V28L40 18Z" fill="rgba(0,255,163,0.05)" stroke="rgba(0,255,163,0.4)" stroke-width="1" stroke-dasharray="4 3"/>
+        <circle cx="40" cy="40" r="10" fill="rgba(0,229,255,0.1)" stroke="#00e5ff" stroke-width="1.5"/>
+        <circle cx="40" cy="40" r="3" fill="#00e5ff"/>
+        <line x1="40" y1="30" x2="40" y2="36" stroke="#00ffa3" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="40" y1="44" x2="40" y2="50" stroke="#00ffa3" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="30" y1="40" x2="36" y2="40" stroke="#00ffa3" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="44" y1="40" x2="50" y2="40" stroke="#00ffa3" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="wordmark">CLOUD<em>GUARD</em></div>
+    <div class="tagline">SENTINEL PLATFORM</div>
+  </div>
+
+  <div class="glass-card">
+    <div class="corner corner-tl"></div><div class="corner corner-tr"></div>
+    <div class="corner corner-bl"></div><div class="corner corner-br"></div>
+    <div class="sweep"></div>
+    <div class="section-label">AUTHENTICATE IDENTITY</div>
+    {% if error %}
+    <div class="error-box">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm0 12a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm1-4H7V4h2v4z"/></svg>
+      {{ error }}
+    </div>
+    {% endif %}
+    <form method="POST" action="/login">
+      <div class="field">
+        <label>User Identifier</label>
+        <div class="input-wrap">
+          <svg class="input-icon" viewBox="0 0 16 16" fill="none" stroke="#00e5ff" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+          <input type="text" name="username" placeholder="username" autocomplete="username" required>
+        </div>
+      </div>
+      <div class="field">
+        <label>Passphrase</label>
+        <div class="input-wrap">
+          <svg class="input-icon" viewBox="0 0 16 16" fill="none" stroke="#00e5ff" stroke-width="1.5"><rect x="3" y="7" width="10" height="8" rx="1.5"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/><circle cx="8" cy="11" r="1" fill="#00e5ff"/></svg>
+          <input type="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+      </div>
+      <button type="submit" class="btn-auth">ACCESS SYSTEM <span class="btn-arrow">›</span></button>
+    </form>
+    <div class="demo-panel">
+      <div class="demo-header">⚡ DEMO CREDENTIALS</div>
+      <div class="demo-rows">
+        <div class="demo-row"><span class="demo-user">admin</span><span class="demo-pass">Admin@1234</span><span class="demo-role role-admin">ADMIN</span></div>
+        <div class="demo-row"><span class="demo-user">alice</span><span class="demo-pass">Alice@1234</span><span class="demo-role role-user">USER</span></div>
+        <div class="demo-row"><span class="demo-user">bob</span><span class="demo-pass">Bob@1234</span><span class="demo-role role-user">USER</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-status">
+    <span><span class="status-dot"></span> SYSTEM ONLINE</span><span class="sep">|</span>
+    <span>E2E ENCRYPTED</span><span class="sep">|</span><span>v3.0.0</span>
+  </div>
+</div>
+<script>
+const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+let W,H,particles=[];
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+class Particle{
+  constructor(){this.reset()}
+  reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.size=Math.random()*1.5+0.3;this.speedX=(Math.random()-.5)*.3;this.speedY=(Math.random()-.5)*.3;this.opacity=Math.random()*.5+.1;this.hue=Math.random()>.7?160:195}
+  update(){this.x+=this.speedX;this.y+=this.speedY;if(this.x<0||this.x>W||this.y<0||this.y>H)this.reset()}
+  draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fillStyle=`hsla(${this.hue},100%,70%,${this.opacity})`;ctx.fill()}
+}
+function init(){particles=[];const c=Math.min(120,Math.floor(W*H/8000));for(let i=0;i<c;i++)particles.push(new Particle())}
+function connections(){for(let i=0;i<particles.length;i++)for(let j=i+1;j<particles.length;j++){const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle=`rgba(0,229,255,${.08*(1-d/120)})`;ctx.lineWidth=.5;ctx.stroke()}}}
+function animate(){ctx.clearRect(0,0,W,H);connections();particles.forEach(p=>{p.update();p.draw()});requestAnimationFrame(animate)}
+resize();init();animate();
+window.addEventListener('resize',()=>{resize();init()});
+</script>
+</body>
+</html>

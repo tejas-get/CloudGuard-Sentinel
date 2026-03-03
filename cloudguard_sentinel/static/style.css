@@ -1,0 +1,17 @@
+/* CloudGuard Sentinel - Global Styles */
+:root {
+  --bg: #020b14;
+  --surface: #061524;
+  --border: #0d3352;
+  --accent: #00c2ff;
+  --accent2: #00ff9d;
+  --danger: #ff3c5a;
+  --warn: #ffaa00;
+  --text: #c8e6f5;
+  --muted: #4a7a9b;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; padding: 0; font-family: 'Rajdhani', sans-serif; }
+
+.mono { font-family: 'Share Tech Mono', monospace; }

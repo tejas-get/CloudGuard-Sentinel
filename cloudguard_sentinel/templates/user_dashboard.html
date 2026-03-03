@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudGuard Sentinel — User Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --void:#02040a;--glass:rgba(8,20,40,0.65);
+  --cyan:#00e5ff;--cyan-glow:rgba(0,229,255,0.2);
+  --green:#00ffa3;--pink:#ff2d78;--gold:#ffd060;
+  --text:#ddeeff;--muted:#4a6a8a;--muted2:#2a4a6a;
+  --border:rgba(0,229,255,0.1);--border2:rgba(0,229,255,0.06);
+}
+html,body{min-height:100%;background:var(--void);font-family:'Syne',sans-serif;color:var(--text)}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 50% 60% at 10% 5%,rgba(0,229,255,0.05),transparent),
+    radial-gradient(ellipse 40% 50% at 90% 90%,rgba(0,255,163,0.04),transparent);
+}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(0,229,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.02) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+
+/* ── NAV ── */
+.topnav{
+  background:rgba(4,10,22,0.9);border-bottom:1px solid var(--border2);
+  padding:0 32px;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);
+  position:relative;z-index:10;
+}
+.nav-brand{display:flex;align-items:center;gap:12px}
+.nav-icon{
+  width:36px;height:36px;background:var(--glass);border:1px solid rgba(0,229,255,0.2);
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:18px;box-shadow:0 0 12px rgba(0,229,255,0.1);
+}
+.wordmark{font-size:1.1rem;font-weight:800;letter-spacing:2px}
+.wordmark em{color:var(--cyan);font-style:normal}
+.nav-right{display:flex;align-items:center;gap:12px}
+.user-pill{
+  display:flex;align-items:center;gap:10px;
+  background:var(--glass);border:1px solid var(--border);border-radius:12px;
+  padding:8px 14px;
+}
+.user-ava{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,rgba(0,229,255,0.3),rgba(0,255,163,0.2));
+  border:1px solid rgba(0,229,255,0.2);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:0.8rem;color:var(--cyan);
+}
+.user-name-pill{font-size:0.85rem;font-weight:700}
+.user-role-pill{font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--green);letter-spacing:2px}
+.btn-logout{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:10px;
+  background:rgba(255,45,120,0.08);border:1px solid rgba(255,45,120,0.2);
+  color:var(--pink);font-size:0.78rem;font-weight:700;letter-spacing:2px;
+  text-decoration:none;transition:all 0.2s;
+}
+.btn-logout:hover{background:rgba(255,45,120,0.15);box-shadow:0 0 12px rgba(255,45,120,0.15)}
+
+/* ── CONTENT ── */
+.content{padding:28px 32px;max-width:1200px;margin:0 auto;position:relative;z-index:1}
+
+/* ── HERO BANNER ── */
+.hero{
+  background:var(--glass);backdrop-filter:blur(20px);
+  border:1px solid var(--border);border-radius:16px;
+  padding:28px 32px;margin-bottom:20px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;overflow:hidden;
+}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),var(--green),transparent);opacity:0.5}
+.hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 100% at 0% 50%,rgba(0,229,255,0.04),transparent);pointer-events:none}
+.hero-text h1{font-size:1.6rem;font-weight:800;margin-bottom:4px}
+.hero-text h1 span{color:var(--cyan)}
+.hero-text p{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:3px}
+.hero-badge{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 16px;border-radius:10px;
+  background:rgba(0,255,163,0.08);border:1px solid rgba(0,255,163,0.2);
+  font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--green);letter-spacing:2px;
+}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* ── STATS ROW ── */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.stat{
+  background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--border2);border-radius:14px;
+  padding:18px 20px;position:relative;overflow:hidden;transition:transform 0.2s;
+}
+.stat:hover{transform:translateY(-2px)}
+.stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.stat-icon{font-size:1.2rem}
+.stat-trend{font-family:'JetBrains Mono',monospace;font-size:0.6rem;padding:3px 8px;border-radius:4px}
+.t-cyan{background:rgba(0,229,255,0.1);color:var(--cyan);border:1px solid rgba(0,229,255,0.2)}
+.t-green{background:rgba(0,255,163,0.1);color:var(--green);border:1px solid rgba(0,255,163,0.2)}
+.t-pink{background:rgba(255,45,120,0.1);color:var(--pink);border:1px solid rgba(255,45,120,0.2)}
+.stat-val{font-size:2.2rem;font-weight:800;line-height:1;margin-bottom:4px}
+.s-cyan .stat-val{color:var(--cyan);text-shadow:0 0 16px rgba(0,229,255,0.3)}
+.s-green .stat-val{color:var(--green);text-shadow:0 0 16px rgba(0,255,163,0.3)}
+.s-pink .stat-val{color:var(--pink);text-shadow:0 0 16px rgba(255,45,120,0.3)}
+.stat-lbl{font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--muted);letter-spacing:2px}
+.stat::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.s-cyan::after{background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0.5}
+.s-green::after{background:linear-gradient(90deg,transparent,var(--green),transparent);opacity:0.5}
+.s-pink::after{background:linear-gradient(90deg,transparent,var(--pink),transparent);opacity:0.5}
+
+/* ── PANEL ── */
+.panel{background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--border2);border-radius:14px;overflow:hidden;margin-bottom:20px}
+.panel-hdr{padding:14px 20px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:3px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.panel-title::before{content:'>';color:var(--cyan)}
+.panel-meta{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted2)}
+
+/* ── TABLE ── */
+.overflow-x{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{background:rgba(0,0,0,0.2);padding:10px 16px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid var(--border2)}
+tbody td{padding:11px 16px;font-size:0.8rem;border-bottom:1px solid rgba(0,0,0,0.15);vertical-align:middle}
+tbody tr:hover{background:rgba(0,229,255,0.02)}
+tbody tr:last-child td{border-bottom:none}
+.mono-sm{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--muted)}
+
+/* Badges */
+.rbadge{padding:2px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:1px;white-space:nowrap}
+.rbadge.HIGH{background:rgba(255,45,120,0.15);color:var(--pink);border:1px solid rgba(255,45,120,0.3)}
+.rbadge.MEDIUM{background:rgba(255,208,96,0.12);color:var(--gold);border:1px solid rgba(255,208,96,0.3)}
+.rbadge.LOW{background:rgba(0,255,163,0.1);color:var(--green);border:1px solid rgba(0,255,163,0.25)}
+
+.empty{text-align:center;padding:32px;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted);letter-spacing:2px}
+
+/* ── TIPS GRID ── */
+.tips-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px 20px}
+.tip{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:16px;border-radius:10px;
+  background:rgba(0,229,255,0.03);border:1px solid var(--border2);
+  transition:all 0.2s;
+}
+.tip:hover{background:rgba(0,229,255,0.06);border-color:var(--border);transform:translateY(-1px)}
+.tip-icon{font-size:1.4rem;flex-shrink:0}
+.tip-t{font-size:0.88rem;font-weight:700;margin-bottom:4px;color:var(--text)}
+.tip-d{font-size:0.76rem;color:var(--muted);line-height:1.5}
+
+.error-banner{background:rgba(255,45,120,0.08);border:1px solid rgba(255,45,120,0.3);border-radius:10px;padding:14px 20px;margin-bottom:20px;color:var(--pink);font-size:0.88rem;display:flex;align-items:center;gap:10px}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="nav-brand">
+    <div class="nav-icon">🛡</div>
+    <div class="wordmark">CLOUD<em>GUARD</em></div>
+  </div>
+  <div class="nav-right">
+    <div class="user-pill">
+      <div class="user-ava">{{ username[0].upper() }}</div>
+      <div>
+        <div class="user-name-pill">{{ username }}</div>
+        <div class="user-role-pill">{{ role.upper() }}</div>
+      </div>
+    </div>
+    <a href="/logout" class="btn-logout">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3M10 5l4 3-4 3M14 8H6"/></svg>
+      LOGOUT
+    </a>
+  </div>
+</nav>
+
+<div class="content">
+  {% if error %}
+  <div class="error-banner">⚠ {{ error }}</div>
+  {% endif %}
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-text">
+      <h1>Welcome, <span>{{ username }}</span></h1>
+      <p>USER PORTAL · CLOUDGUARD SENTINEL · REAL-TIME MONITORING</p>
+    </div>
+    <div class="hero-badge"><span class="live-dot"></span>MONITORING ACTIVE</div>
+  </div>
+
+  <!-- Stats -->
+  {% set total = logs|length if logs else 0 %}
+  {% set high_c = anomalies|selectattr('risk_level','equalto','HIGH')|list|length if anomalies else 0 %}
+  {% set low_c = anomalies|selectattr('risk_level','equalto','LOW')|list|length if anomalies else 0 %}
+  <div class="stats-row">
+    <div class="stat s-cyan">
+      <div class="stat-top"><span class="stat-icon">📋</span><span class="stat-trend t-cyan">SESSIONS</span></div>
+      <div class="stat-val">{{ total }}</div>
+      <div class="stat-lbl">TOTAL ACCESS LOGS</div>
+    </div>
+    <div class="stat s-green">
+      <div class="stat-top"><span class="stat-icon">✅</span><span class="stat-trend t-green">CLEAN</span></div>
+      <div class="stat-val">{{ low_c }}</div>
+      <div class="stat-lbl">NORMAL ACCESSES</div>
+    </div>
+    <div class="stat s-pink">
+      <div class="stat-top"><span class="stat-icon">⚠️</span><span class="stat-trend t-pink">RISK</span></div>
+      <div class="stat-val">{{ high_c }}</div>
+      <div class="stat-lbl">HIGH RISK EVENTS</div>
+    </div>
+  </div>
+
+  <!-- Access history -->
+  <div class="panel">
+    <div class="panel-hdr">
+      <div class="panel-title">YOUR ACCESS HISTORY</div>
+      <span class="panel-meta">LAST 20 SESSIONS</span>
+    </div>
+    <div class="overflow-x">
+      {% if logs %}
+      <table>
+        <thead><tr>
+          <th>TIMESTAMP</th><th>ENDPOINT</th><th>METHOD</th>
+          <th>DEVICE</th><th>IP ADDRESS</th><th>LOCATION</th><th>OFF-HOURS</th>
+        </tr></thead>
+        <tbody>
+          {% for log in logs %}
+          <tr>
+            <td class="mono-sm">{{ log.timestamp[:19] if log.timestamp else 'N/A' }}</td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--cyan)">{{ log.endpoint }}</td>
+            <td class="mono-sm">{{ log.method }}</td>
+            <td style="font-size:0.82rem">
+              {% set d=log.device_type or 'desktop' %}
+              {% if d=='mobile' %}📱{% elif d=='tablet' %}💻{% elif d=='api_client' %}🤖{% else %}🖥{% endif %} {{ d }}
+            </td>
+            <td class="mono-sm">{{ log.ip_address }}</td>
+            <td style="font-size:0.8rem">
+              {% if log.city and log.city not in ('Unknown','Localhost') %}📍 {{ log.city }}, {{ log.country }}
+              {% elif log.country %}🌐 {{ log.country }}
+              {% else %}Local{% endif %}
+            </td>
+            <td>
+              {% if log.is_off_hours %}
+              <span style="color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:0.62rem">⚠ YES</span>
+              {% else %}
+              <span style="color:var(--green);font-family:'JetBrains Mono',monospace;font-size:0.62rem">✓ NO</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty">NO ACCESS RECORDS YET</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Risk analysis -->
+  <div class="panel">
+    <div class="panel-hdr">
+      <div class="panel-title">ML RISK ANALYSIS</div>
+      <span class="panel-meta">ISOLATION FOREST SCORES</span>
+    </div>
+    <div class="overflow-x">
+      {% if anomalies %}
+      <table>
+        <thead><tr><th>TIMESTAMP</th><th>ISO SCORE</th><th>RISK LEVEL</th><th>FLAGS DETECTED</th></tr></thead>
+        <tbody>
+          {% for a in anomalies %}
+          <tr>
+            <td class="mono-sm">{{ a.timestamp[:19] if a.timestamp else 'N/A' }}</td>
+            <td style="font-family:'JetBrains Mono',monospace;color:var(--cyan)">{{ '%.4f'|format(a.isolation_score) }}</td>
+            <td><span class="rbadge {{ a.risk_level }}">{{ a.risk_level }}</span></td>
+            <td class="mono-sm" style="font-size:0.65rem">
+              {% if a.rule_flags and a.rule_flags != '[]' %}{{ a.rule_flags }}
+              {% else %}<span style="color:var(--green)">✓ NONE</span>{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty">NO ANOMALY DATA YET — LOG IN A FEW MORE TIMES</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Tips -->
+  <div class="panel">
+    <div class="panel-hdr"><div class="panel-title">SECURITY BEST PRACTICES</div></div>
+    <div class="tips-grid">
+      <div class="tip"><div class="tip-icon">🔑</div><div><div class="tip-t">Strong Passwords</div><div class="tip-d">Use 12+ characters with mixed case, numbers and symbols. Never reuse passwords across services.</div></div></div>
+      <div class="tip"><div class="tip-icon">🕐</div><div><div class="tip-t">Stay Within Hours</div><div class="tip-d">Access outside 6AM–10PM is automatically flagged and raises your risk score significantly.</div></div></div>
+      <div class="tip"><div class="tip-icon">📱</div><div><div class="tip-t">Use Trusted Devices</div><div class="tip-d">API clients and unrecognized devices trigger anomaly flags. Always access from your known device.</div></div></div>
+      <div class="tip"><div class="tip-icon">🚨</div><div><div class="tip-t">Report Suspicious Activity</div><div class="tip-d">Notice unexpected entries in your history above? Contact your administrator immediately.</div></div></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
